@@ -1,8 +1,12 @@
-const { Users } = require("../../models/");
+const { User, Product } = require("../../models/");
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await Users.findAll();
+    const users = await User.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password"],
+      },
+    });
     res.send({
       status: "success",
       data: {
@@ -21,7 +25,7 @@ exports.getUsers = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await Users.destroy({
+    await User.destroy({
       where: {
         id,
       },
@@ -37,3 +41,33 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+// [
+//   {
+//     id: 1,
+//     fullName: "spiderman",
+//     email: "spiderman@gmail.com",
+//     phone: "08123819391",
+//     location: "082138193913,0292912193201",
+//     image: "spiderman.png",
+//     role: "user",
+//   },
+//   {
+//     id: 2,
+//     fullName: "KFC",
+//     email: "KFC@kfcsupport.com",
+//     phone: "07298192",
+//     location: "081283193131,0092912193201",
+//     image: "kfc-oke.png",
+//     role: "partner",
+//   },
+//   {
+//     id: 3,
+//     fullName: "surti",
+//     email: "surti@gmail.com",
+//     phone: "08218931312221",
+//     location: "0092913919312,0091293913122",
+//     image: "surti-foto.png",
+//     role: "user",
+//   },
+// ];

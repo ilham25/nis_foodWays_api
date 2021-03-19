@@ -27,10 +27,11 @@ exports.getTransactionsByPartner = async (req, res) => {
               model: Product,
               as: "product",
               attributes: {
-                exclude: ["id", "createdAt", "updatedAt", "userId"],
+                // insert exclude id if want to use order id
+                exclude: ["createdAt", "updatedAt", "userId"],
               },
               where: {
-                id,
+                userId: id,
               },
             },
           ],
@@ -53,13 +54,16 @@ exports.getTransactionsByPartner = async (req, res) => {
 
     const transactionsString = JSON.stringify(rawTransactions);
     const transactionsObject = JSON.parse(transactionsString);
-
-    const transactions = transactionsObject.map((trans) => {
+    const filteredTransaction = transactionsObject.filter(
+      (item) => item.order.length
+    );
+    console.log("fT", filteredTransaction);
+    const transactions = filteredTransaction.map((trans) => {
       return {
         ...trans,
         order: [
           ...trans.order.map((order) => ({
-            id: order.id,
+            // id: order.id, // uncomment to use order id
             qty: order.qty,
             ...order.product,
           })),

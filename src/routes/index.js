@@ -8,6 +8,7 @@ const {
   getProductsByPartner,
   getDetailProduct,
 } = require("../controller/product");
+const { getTransactionsByPartner } = require("../controller/transaction");
 
 router.get("/users", getUsers);
 router.delete("/user/delete/:id", deleteUser);
@@ -15,5 +16,7 @@ router.delete("/user/delete/:id", deleteUser);
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductsByPartner);
 router.get("/product/:id", getDetailProduct);
+
+router.get("/transactions/:id", getTransactionsByPartner);
 
 module.exports = router;

@@ -2,7 +2,6 @@ exports.get = (req, res) => {
   try {
     res.send({
       status: "success",
-      message: "... data collected",
       data: {},
     });
   } catch (err) {

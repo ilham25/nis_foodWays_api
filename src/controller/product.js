@@ -40,6 +40,7 @@ exports.getProductsByPartner = async (req, res) => {
           attributes: [],
           where: {
             id,
+            role: "partner",
           },
         },
       ],

@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
 
     if (checkEmail)
       return res.status(400).send({
-        status: "Register failed",
+        status: "register failed",
         message: "Email already registered",
       });
 
@@ -66,6 +66,72 @@ exports.register = async (req, res) => {
     res.status(500).send({
       status: "error",
       message: "Internal Server Error",
+    });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const schema = Joi.object({
+      email: Joi.string().email().min(10).max(30).required(),
+      password: Joi.string().min(5).max(20).required(),
+    });
+
+    const { error } = schema.validate(req.body);
+
+    if (error)
+      return res.status(400).send({
+        status: "validation failed",
+        message: error.details[0].message,
+      });
+
+    const validateUser = await User.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!validateUser)
+      return res.status(400).send({
+        status: "login failed",
+        message: "Invalid credentials",
+      });
+
+    const isValidPass = await bcrypt.compare(password, validateUser.password);
+
+    if (!isValidPass) {
+      return res.status(400).send({
+        status: "login failed",
+        message: "Invalid credentials",
+      });
+    }
+
+    const secretKey = process.env.JWT_SECRET_TOKEN;
+    const token = jwt.sign(
+      {
+        id: validateUser.id,
+      },
+      secretKey
+    );
+
+    res.send({
+      status: "success",
+      message: "Login Success",
+      data: {
+        user: {
+          fullName: validateUser.fullName,
+          email: validateUser.email,
+          token,
+        },
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Server Error",
     });
   }
 };

@@ -13,6 +13,8 @@ const {
   getDetailTransaction,
 } = require("../controller/transaction");
 
+const { register } = require("../controller/auth");
+
 router.get("/users", getUsers);
 router.delete("/user/delete/:id", deleteUser);
 
@@ -22,5 +24,7 @@ router.get("/product/:id", getDetailProduct);
 
 router.get("/transactions/:id", getTransactionsByPartner);
 router.get("/transaction/:id", getDetailTransaction);
+
+router.post("/register", register);
 
 module.exports = router;

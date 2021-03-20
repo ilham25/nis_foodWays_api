@@ -353,3 +353,40 @@ exports.addTransaction = async (req, res) => {
     });
   }
 };
+
+exports.deleteTransaction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rawTransactions = await Transaction.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (rawTransactions == null)
+      return res.status(400).send({
+        status: "failed",
+        message: "Transaction doesn't available",
+      });
+
+    const removeTransactions = await Transaction.destroy({
+      where: {
+        id,
+      },
+    });
+
+    res.send({
+      status: "success",
+      message: "Success remove transaction",
+      data: {
+        id,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};

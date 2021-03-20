@@ -16,6 +16,7 @@ const {
   getDetailTransaction,
   getUserTransaction,
   addTransaction,
+  deleteTransaction,
 } = require("../controller/transaction");
 
 const { register, login } = require("../controller/auth");
@@ -24,9 +25,11 @@ const { authenticated } = require("../middlewares/auth");
 const { uploadFile } = require("../middlewares/upload");
 const { checkPartner, checkUser } = require("../middlewares/checkRole");
 
+// Users routes
 router.get("/users", getUsers);
 router.delete("/user/:id", authenticated, deleteUser);
 
+// Products routes
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductsByPartner);
 router.get("/product/:id", getDetailProduct);
@@ -37,9 +40,10 @@ router.post(
   uploadFile("image"),
   addProduct
 );
-router.delete("/product/:id", authenticated, checkPartner, deleteProduct);
 router.patch("/product/:id", authenticated, checkPartner, updateProduct);
+router.delete("/product/:id", authenticated, checkPartner, deleteProduct);
 
+// Transactions route
 router.get(
   "/transactions/:id",
   authenticated,
@@ -54,6 +58,7 @@ router.get(
   getUserTransaction
 );
 router.post("/transaction", authenticated, checkUser, addTransaction);
+router.delete("/transaction/:id", authenticated, checkUser, deleteTransaction);
 
 router.post("/register", register);
 router.post("/login", login);

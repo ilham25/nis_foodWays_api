@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "userOrder",
         foreignKey: "userId",
       });
+
       // Transaction.hasMany(models.Product);
     }
   }

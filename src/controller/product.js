@@ -2,7 +2,7 @@ const { User, Product } = require("../../models");
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll({
+    const rawProducts = await Product.findAll({
       include: [
         {
           model: User,
@@ -15,6 +15,16 @@ exports.getAllProducts = async (req, res) => {
       attributes: {
         exclude: ["createdAt", "updatedAt", "UserId", "userId"],
       },
+    });
+    const productsString = JSON.stringify(rawProducts);
+    const productsObject = JSON.parse(productsString);
+
+    const products = productsObject.map((product) => {
+      const url = process.env.UPLOAD_URL;
+      return {
+        ...product,
+        image: url + product.image,
+      };
     });
     res.send({
       status: "success",
@@ -32,7 +42,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductsByPartner = async (req, res) => {
   try {
     const { id } = req.params;
-    const products = await Product.findAll({
+    const rawProducts = await Product.findAll({
       include: [
         {
           model: User,
@@ -47,6 +57,16 @@ exports.getProductsByPartner = async (req, res) => {
       attributes: {
         exclude: ["createdAt", "updatedAt", "UserId", "userId"],
       },
+    });
+    const productsString = JSON.stringify(rawProducts);
+    const productsObject = JSON.parse(productsString);
+
+    const products = productsObject.map((product) => {
+      const url = process.env.UPLOAD_URL;
+      return {
+        ...product,
+        image: url + product.image,
+      };
     });
     res.send({
       status: "success",
@@ -64,7 +84,7 @@ exports.getProductsByPartner = async (req, res) => {
 exports.getDetailProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const products = await Product.findAll({
+    const rawProduct = await Product.findOne({
       include: [
         {
           model: User,
@@ -81,9 +101,100 @@ exports.getDetailProduct = async (req, res) => {
         id,
       },
     });
+
+    if (rawProduct == null)
+      return res.status(400).send({
+        status: "failed",
+      });
+
+    const productString = JSON.stringify(rawProduct);
+    const productObject = JSON.parse(productString);
+    const url = process.env.UPLOAD_URL;
+    const product = {
+      ...productObject,
+      image: url + productObject.image,
+    };
+
     res.send({
       status: "success",
-      data: { products },
+      data: { product },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.addProduct = async (req, res) => {
+  try {
+    const createProduct = await Product.create({
+      ...req.body,
+      image: req.files.image[0].filename,
+      userId: req.user.id,
+    });
+    const product = await Product.findAll({
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password", "image", "role"],
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "UserId", "userId"],
+      },
+      where: {
+        id: createProduct.id,
+      },
+    });
+    res.send({
+      status: "success",
+      data: { product },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const checkProduct = await Product.findOne({
+      where: {
+        id,
+      },
+    });
+    if (checkProduct == null)
+      return res.status(400).send({
+        status: "failed",
+        message: "Product doesn't available",
+      });
+
+    if (checkProduct.userId !== req.user.id)
+      return res.status(401).send({
+        status: "failed",
+        message: "You dont have access to this product",
+      });
+
+    const deleteProduct = await Product.destroy({
+      where: {
+        id,
+      },
+    });
+    res.send({
+      status: "success",
+      data: {
+        id,
+      },
     });
   } catch (err) {
     console.log(err);

@@ -253,10 +253,11 @@ exports.getUserTransaction = async (req, res) => {
 
 exports.addTransaction = async (req, res) => {
   try {
-    const { tempUserId, products } = req.body;
+    const { products } = req.body;
+    const { id } = req.user;
 
     const createTransaction = await Transaction.create({
-      userId: tempUserId,
+      userId: id,
       status: "Success",
     });
 
@@ -267,12 +268,6 @@ exports.addTransaction = async (req, res) => {
         qty: product.qty,
       });
     });
-
-    // const createOrder = await Order.create({
-    //   productId,
-    //   transactionId : createTransaction.id,
-
-    // })
 
     const rawTransactions = await Transaction.findOne({
       include: [
@@ -303,7 +298,6 @@ exports.addTransaction = async (req, res) => {
               },
             },
           ],
-
           attributes: {
             exclude: [
               "createdAt",

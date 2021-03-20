@@ -267,13 +267,13 @@ exports.addTransaction = async (req, res) => {
       status: "Success",
     });
 
-    products.map(async (product) => {
-      await Order.create({
+    const addProducts = await Order.bulkCreate(
+      products.map((product) => ({
         productId: product.id,
         transactionId: createTransaction.id,
         qty: product.qty,
-      });
-    });
+      }))
+    );
 
     const rawTransactions = await Transaction.findOne({
       include: [

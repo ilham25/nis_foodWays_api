@@ -4,7 +4,7 @@ exports.getUsers = async (req, res) => {
   try {
     const users = await User.findAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "password"],
+        exclude: ["createdAt", "updatedAt", "password", "gender"],
       },
     });
     res.send({
@@ -26,7 +26,19 @@ exports.getUsers = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await User.destroy({
+    const checkUser = await User.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (checkUser == null)
+      return res.status(400).send({
+        status: "failed",
+        message: "User doesn't available",
+      });
+
+    const removeProduct = await User.destroy({
       where: {
         id,
       },
@@ -34,6 +46,9 @@ exports.deleteUser = async (req, res) => {
     res.send({
       status: "success",
       message: "Success delete user data",
+      data: {
+        id,
+      },
     });
   } catch (err) {
     console.log(err);

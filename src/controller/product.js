@@ -8,7 +8,14 @@ exports.getAllProducts = async (req, res) => {
           model: User,
           as: "user",
           attributes: {
-            exclude: ["createdAt", "updatedAt", "password", "image", "role"],
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "image",
+              "role",
+              "gender",
+            ],
           },
         },
       ],
@@ -92,7 +99,14 @@ exports.getDetailProduct = async (req, res) => {
           model: User,
           as: "user",
           attributes: {
-            exclude: ["createdAt", "updatedAt", "password", "image", "role"],
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "image",
+              "role",
+              "gender",
+            ],
           },
         },
       ],
@@ -145,7 +159,14 @@ exports.addProduct = async (req, res) => {
           model: User,
           as: "user",
           attributes: {
-            exclude: ["createdAt", "updatedAt", "password", "image", "role"],
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "image",
+              "role",
+              "gender",
+            ],
           },
         },
       ],
@@ -190,7 +211,7 @@ exports.deleteProduct = async (req, res) => {
         message: "You dont have access to this product",
       });
 
-    const deleteProduct = await Product.destroy({
+    const removeProduct = await Product.destroy({
       where: {
         id,
       },
@@ -200,6 +221,75 @@ exports.deleteProduct = async (req, res) => {
       data: {
         id,
       },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const editProduct = await Product.update(
+      { ...req.body },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+
+    const rawProduct = await Product.findOne({
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "image",
+              "role",
+              "gender",
+            ],
+          },
+          where: {
+            id: req.user.id,
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "UserId", "userId"],
+      },
+      where: {
+        id,
+      },
+    });
+
+    if (rawProduct == null)
+      return res.status(400).send({
+        status: "failed",
+        message: "Product not available or user doesn't access",
+      });
+
+    const productString = JSON.stringify(rawProduct);
+    const productObject = JSON.parse(productString);
+    const url = process.env.UPLOAD_URL;
+    const product = {
+      ...productObject,
+      image: url + productObject.image,
+    };
+
+    res.send({
+      status: "success",
+      message: "Success get product detail",
+      data: { product },
     });
   } catch (err) {
     console.log(err);

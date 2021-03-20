@@ -87,7 +87,7 @@ exports.getTransactionsByPartner = async (req, res) => {
 exports.getDetailTransaction = async (req, res) => {
   try {
     const { id } = req.params;
-    const rawTransactions = await Transaction.findAll({
+    const rawTransactions = await Transaction.findOne({
       include: [
         {
           model: User,
@@ -136,23 +136,29 @@ exports.getDetailTransaction = async (req, res) => {
       },
     });
 
+    if (rawTransactions == null)
+      return res.status(400).send({
+        status: "error",
+      });
+
     const transactionsString = JSON.stringify(rawTransactions);
     const transactionsObject = JSON.parse(transactionsString);
-    const filteredTransaction = transactionsObject.filter(
-      (item) => item.order.length
-    );
-    const transactions = filteredTransaction.map((trans) => {
-      return {
-        ...trans,
-        order: [
-          ...trans.order.map((order) => ({
-            // id: order.id, // uncomment to use order id
-            qty: order.qty,
-            ...order.product,
-          })),
-        ],
-      };
-    });
+
+    const transactions = transactionsObject.order
+      ? {
+          ...transactionsObject,
+          order: [
+            ...transactionsObject.order.map((order) => ({
+              // id: order.id, // uncomment to use order id
+              qty: order.qty,
+              ...order.product,
+            })),
+          ],
+        }
+      : {
+          ...transactionsObject,
+          order: [],
+        };
 
     res.send({
       status: "success",
@@ -245,17 +251,43 @@ exports.getUserTransaction = async (req, res) => {
   }
 };
 
-exports.getUserTransaction = async (req, res) => {
+exports.addTransaction = async (req, res) => {
   try {
-    const { id } = req.params;
-    const rawTransactions = await Transaction.findAll({
+    const { tempUserId, products } = req.body;
+
+    const createTransaction = await Transaction.create({
+      userId: tempUserId,
+      status: "Success",
+    });
+
+    products.map(async (product) => {
+      await Order.create({
+        productId: product.id,
+        transactionId: createTransaction.id,
+        qty: product.qty,
+      });
+    });
+
+    // const createOrder = await Order.create({
+    //   productId,
+    //   transactionId : createTransaction.id,
+
+    // })
+
+    const rawTransactions = await Transaction.findOne({
       include: [
         {
           model: User,
           as: "userOrder",
-          attributes: [],
-          where: {
-            id,
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "phone",
+              "image",
+              "role",
+            ],
           },
         },
         {
@@ -286,28 +318,27 @@ exports.getUserTransaction = async (req, res) => {
       attributes: {
         exclude: ["createdAt", "updatedAt", "userId"],
       },
+      where: {
+        id: createTransaction.id,
+      },
     });
 
     const transactionsString = JSON.stringify(rawTransactions);
     const transactionsObject = JSON.parse(transactionsString);
-    const filteredTransaction = transactionsObject.filter(
-      (item) => item.order.length
-    );
-    const transactions = filteredTransaction.map((trans) => {
-      return {
-        ...trans,
-        order: [
-          ...trans.order.map((order) => ({
-            // id: order.id, // uncomment to use order id
-            qty: order.qty,
-            ...order.product,
-          })),
-        ],
-      };
-    });
+
+    const transactions = {
+      ...transactionsObject,
+      order: [
+        ...transactionsObject.order.map((order) => ({
+          // id: order.id, // uncomment to use order id
+          qty: order.qty,
+          ...order.product,
+        })),
+      ],
+    };
 
     res.send({
-      status: "success",
+      status: "on the way",
       data: {
         transactions,
       },

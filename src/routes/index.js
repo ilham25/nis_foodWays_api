@@ -12,6 +12,7 @@ const {
   getTransactionsByPartner,
   getDetailTransaction,
   getUserTransaction,
+  addTransaction,
 } = require("../controller/transaction");
 
 const { register, login } = require("../controller/auth");
@@ -26,6 +27,7 @@ router.get("/product/:id", getDetailProduct);
 router.get("/transactions/:id", getTransactionsByPartner);
 router.get("/transaction/:id", getDetailTransaction);
 router.get("/my-transactions/:id", getUserTransaction);
+router.post("/transaction", addTransaction);
 
 router.post("/register", register);
 router.post("/login", login);

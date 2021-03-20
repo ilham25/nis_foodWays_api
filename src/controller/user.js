@@ -9,6 +9,7 @@ exports.getUsers = async (req, res) => {
     });
     res.send({
       status: "success",
+      message: "Success get all users data",
       data: {
         users,
       },
@@ -32,6 +33,7 @@ exports.deleteUser = async (req, res) => {
     });
     res.send({
       status: "success",
+      message: "Success delete user data",
     });
   } catch (err) {
     console.log(err);

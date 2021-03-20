@@ -28,6 +28,7 @@ exports.getAllProducts = async (req, res) => {
     });
     res.send({
       status: "success",
+      message: "Success get all product data",
       data: { products },
     });
   } catch (err) {
@@ -70,6 +71,7 @@ exports.getProductsByPartner = async (req, res) => {
     });
     res.send({
       status: "success",
+      message: "Success get product data",
       data: { products },
     });
   } catch (err) {
@@ -105,6 +107,7 @@ exports.getDetailProduct = async (req, res) => {
     if (rawProduct == null)
       return res.status(400).send({
         status: "failed",
+        message: "Product doesn't available",
       });
 
     const productString = JSON.stringify(rawProduct);
@@ -117,6 +120,7 @@ exports.getDetailProduct = async (req, res) => {
 
     res.send({
       status: "success",
+      message: "Success get product detail",
       data: { product },
     });
   } catch (err) {
@@ -154,6 +158,7 @@ exports.addProduct = async (req, res) => {
     });
     res.send({
       status: "success",
+      message: "Success add new product",
       data: { product },
     });
   } catch (err) {

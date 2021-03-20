@@ -72,6 +72,7 @@ exports.getTransactionsByPartner = async (req, res) => {
 
     res.send({
       status: "success",
+      message: "Success get product by partner id",
       data: {
         transactions,
       },
@@ -138,7 +139,8 @@ exports.getDetailTransaction = async (req, res) => {
 
     if (rawTransactions == null)
       return res.status(400).send({
-        status: "error",
+        status: "failed",
+        message: "Transaction doesn't available",
       });
 
     const transactionsString = JSON.stringify(rawTransactions);
@@ -162,6 +164,7 @@ exports.getDetailTransaction = async (req, res) => {
 
     res.send({
       status: "success",
+      message: "Success get product detail",
       data: {
         transactions,
       },
@@ -238,6 +241,7 @@ exports.getUserTransaction = async (req, res) => {
 
     res.send({
       status: "success",
+      message: "Success get product by user id",
       data: {
         transactions,
       },
@@ -333,6 +337,7 @@ exports.addTransaction = async (req, res) => {
 
     res.send({
       status: "on the way",
+      message: "Success add transaction",
       data: {
         transactions,
       },

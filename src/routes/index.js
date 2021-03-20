@@ -17,6 +17,7 @@ const {
   getUserTransaction,
   addTransaction,
   deleteTransaction,
+  updateTransaction,
 } = require("../controller/transaction");
 
 const { register, login } = require("../controller/auth");
@@ -59,6 +60,7 @@ router.get(
 );
 router.post("/transaction", authenticated, checkUser, addTransaction);
 router.delete("/transaction/:id", authenticated, checkUser, deleteTransaction);
+router.patch("/transaction/:id", authenticated, checkUser, updateTransaction);
 
 router.post("/register", register);
 router.post("/login", login);

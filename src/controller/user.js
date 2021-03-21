@@ -2,10 +2,21 @@ const { User, Product } = require("../../models/");
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.findAll({
+    const rawUsers = await User.findAll({
       attributes: {
         exclude: ["createdAt", "updatedAt", "password", "gender"],
       },
+    });
+
+    const usersString = JSON.stringify(rawUsers);
+    const usersObject = JSON.parse(usersString);
+
+    const users = usersObject.map((user) => {
+      const url = process.env.UPLOAD_URL;
+      return {
+        ...user,
+        image: url + user.image,
+      };
     });
     res.send({
       status: "success",
@@ -70,7 +81,10 @@ exports.updateUser = async (req, res) => {
       });
 
     const editUser = await User.update(
-      { ...req.body, image: req.files.image[0] && req.files.image[0].filename },
+      {
+        ...req.body,
+        image: req.files.image && req.files.image[0].filename,
+      },
       {
         where: {
           id,

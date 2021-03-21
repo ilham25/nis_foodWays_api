@@ -40,6 +40,8 @@ exports.register = async (req, res) => {
 
     const user = await User.create({
       ...req.body,
+      image:
+        req.body.role === "user" ? "user-default.png" : "partner-default.png",
       password: hashedPassword,
     });
 

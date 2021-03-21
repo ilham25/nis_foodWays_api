@@ -183,6 +183,13 @@ exports.getDetailTransaction = async (req, res) => {
 exports.getUserTransaction = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (req.user.id != id)
+      return res.status(401).send({
+        status: "failed",
+        message: "User doesn't have access",
+      });
+
     const rawTransactions = await Transaction.findAll({
       include: [
         {

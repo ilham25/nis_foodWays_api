@@ -148,12 +148,18 @@ exports.getDetailProduct = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
   try {
+    if (!req.files.image)
+      return res.status(400).send({
+        status: "failed",
+        message: "Please insert image to upload",
+      });
+
     const createProduct = await Product.create({
       ...req.body,
       image: req.files.image[0].filename,
       userId: req.user.id,
     });
-    const product = await Product.findAll({
+    const rawProduct = await Product.findOne({
       include: [
         {
           model: User,
@@ -177,6 +183,15 @@ exports.addProduct = async (req, res) => {
         id: createProduct.id,
       },
     });
+
+    const productString = JSON.stringify(rawProduct);
+    const productObject = JSON.parse(productString);
+    const url = process.env.UPLOAD_URL;
+    const product = {
+      ...productObject,
+      image: url + productObject.image,
+    };
+
     res.send({
       status: "success",
       message: "Success add new product",

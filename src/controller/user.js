@@ -49,7 +49,7 @@ exports.deleteUser = async (req, res) => {
         message: "User doesn't available",
       });
 
-    const removeProduct = await User.destroy({
+    const removeUser = await User.destroy({
       where: {
         id,
       },
@@ -58,7 +58,7 @@ exports.deleteUser = async (req, res) => {
       status: "success",
       message: "Success delete user data",
       data: {
-        id,
+        id: parseInt(id),
       },
     });
   } catch (err) {

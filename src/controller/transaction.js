@@ -58,14 +58,17 @@ exports.getTransactionsByPartner = async (req, res) => {
     const filteredTransaction = transactionsObject.filter(
       (item) => item.order.length
     );
+    const url = process.env.UPLOAD_URL;
+
     const transactions = filteredTransaction.map((trans) => {
       return {
         ...trans,
         order: [
           ...trans.order.map((order) => ({
             // id: order.id, // uncomment to use order id
-            qty: order.qty,
             ...order.product,
+            image: url + order.product.image,
+            qty: order.qty,
           })),
         ],
       };
@@ -147,6 +150,7 @@ exports.getDetailTransaction = async (req, res) => {
 
     const transactionsString = JSON.stringify(rawTransactions);
     const transactionsObject = JSON.parse(transactionsString);
+    const url = process.env.UPLOAD_URL;
 
     const transactions = transactionsObject.order
       ? {
@@ -154,8 +158,9 @@ exports.getDetailTransaction = async (req, res) => {
           order: [
             ...transactionsObject.order.map((order) => ({
               // id: order.id, // uncomment to use order id
-              qty: order.qty,
               ...order.product,
+              image: url + order.product.image,
+              qty: order.qty,
             })),
           ],
         }
@@ -235,14 +240,17 @@ exports.getUserTransaction = async (req, res) => {
     const filteredTransaction = transactionsObject.filter(
       (item) => item.order.length
     );
+    const url = process.env.UPLOAD_URL;
+
     const transactions = filteredTransaction.map((trans) => {
       return {
         ...trans,
         order: [
           ...trans.order.map((order) => ({
             // id: order.id, // uncomment to use order id
-            qty: order.qty,
             ...order.product,
+            image: url + order.product,
+            qty: order.qty,
           })),
         ],
       };
@@ -282,7 +290,7 @@ exports.addTransaction = async (req, res) => {
       }))
     );
 
-    const rawTransactions = await Transaction.findOne({
+    const rawTransaction = await Transaction.findOne({
       include: [
         {
           model: User,
@@ -331,16 +339,18 @@ exports.addTransaction = async (req, res) => {
       },
     });
 
-    const transactionsString = JSON.stringify(rawTransactions);
-    const transactionsObject = JSON.parse(transactionsString);
+    const transactionString = JSON.stringify(rawTransaction);
+    const transactionObject = JSON.parse(transactionString);
+    const url = process.env.UPLOAD_URL;
 
-    const transactions = {
-      ...transactionsObject,
+    const transaction = {
+      ...transactionObject,
       order: [
-        ...transactionsObject.order.map((order) => ({
+        ...transactionObject.order.map((order) => ({
           // id: order.id, // uncomment to use order id
-          qty: order.qty,
           ...order.product,
+          image: url + order.product.image,
+          qty: order.qty,
         })),
       ],
     };
@@ -349,7 +359,7 @@ exports.addTransaction = async (req, res) => {
       status: "on the way",
       message: "Success add transaction",
       data: {
-        transactions,
+        transaction,
       },
     });
   } catch (err) {
@@ -386,7 +396,7 @@ exports.deleteTransaction = async (req, res) => {
       status: "success",
       message: "Success remove transaction",
       data: {
-        id,
+        id: parseInt(id),
       },
     });
   } catch (err) {
@@ -411,7 +421,7 @@ exports.updateTransaction = async (req, res) => {
       }
     );
 
-    const rawTransactions = await Transaction.findOne({
+    const rawTransaction = await Transaction.findOne({
       include: [
         {
           model: User,
@@ -461,28 +471,30 @@ exports.updateTransaction = async (req, res) => {
       },
     });
 
-    if (rawTransactions == null)
+    if (rawTransaction == null)
       return res.status(404).send({
         status: "failed",
         message: "Transaction doesn't available",
       });
 
-    const transactionsString = JSON.stringify(rawTransactions);
-    const transactionsObject = JSON.parse(transactionsString);
+    const transactionString = JSON.stringify(rawTransaction);
+    const transactionObject = JSON.parse(transactionString);
+    const url = process.env.UPLOAD_URL;
 
-    const transactions = transactionsObject.order
+    const transaction = transactionObject.order
       ? {
-          ...transactionsObject,
+          ...transactionObject,
           order: [
-            ...transactionsObject.order.map((order) => ({
+            ...transactionObject.order.map((order) => ({
               // id: order.id, // uncomment to use order id
-              qty: order.qty,
               ...order.product,
+              image: url + order.product.image,
+              qty: order.qty,
             })),
           ],
         }
       : {
-          ...transactionsObject,
+          ...transactionObject,
           order: [],
         };
 
@@ -490,7 +502,7 @@ exports.updateTransaction = async (req, res) => {
       status: "success",
       message: "Success edit product detail",
       data: {
-        transactions,
+        transaction,
       },
     });
   } catch (err) {

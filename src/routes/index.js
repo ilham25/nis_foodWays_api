@@ -42,7 +42,13 @@ router.post(
   uploadFile("image"),
   addProduct
 );
-router.patch("/product/:id", authenticated, checkPartner, updateProduct);
+router.patch(
+  "/product/:id",
+  authenticated,
+  checkPartner,
+  uploadFile("image"),
+  updateProduct
+);
 router.delete("/product/:id", authenticated, checkPartner, deleteProduct);
 
 // Transactions route

@@ -233,8 +233,9 @@ exports.deleteProduct = async (req, res) => {
     });
     res.send({
       status: "success",
+      message: "Success delete product",
       data: {
-        id,
+        id: parseInt(id),
       },
     });
   } catch (err) {
@@ -251,7 +252,7 @@ exports.updateProduct = async (req, res) => {
     const { id } = req.params;
 
     const editProduct = await Product.update(
-      { ...req.body },
+      { ...req.body, image: req.files.image && req.files.image[0].filename },
       {
         where: {
           id,

@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { getUsers, deleteUser } = require("../controller/user");
+const { getUsers, deleteUser, updateUser } = require("../controller/user");
 const {
   getAllProducts,
   getProductsByPartner,
@@ -29,6 +29,7 @@ const { checkPartner, checkUser } = require("../middlewares/checkRole");
 // Users routes
 router.get("/users", getUsers);
 router.delete("/user/:id", authenticated, deleteUser);
+router.patch("/user/:id", authenticated, uploadFile("image"), updateUser);
 
 // Products routes
 router.get("/products", getAllProducts);

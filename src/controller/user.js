@@ -58,3 +58,61 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (req.user.id != id)
+      return res.status(401).send({
+        status: "failed",
+        message: "User doesn't have access",
+      });
+
+    const editUser = await User.update(
+      { ...req.body, image: req.files.image[0] && req.files.image[0].filename },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+
+    const rawUser = await User.findOne({
+      where: {
+        id,
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password", "gender"],
+      },
+    });
+
+    if (rawUser == null)
+      return res.status(400).send({
+        status: "failed",
+        message: "User doesn't available",
+      });
+
+    const userString = JSON.stringify(rawUser);
+    const userObject = JSON.parse(userString);
+    const url = process.env.UPLOAD_URL;
+    const user = {
+      ...userObject,
+      image: url + userObject.image,
+    };
+
+    res.send({
+      status: "success",
+      message: "Success edit user data",
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};

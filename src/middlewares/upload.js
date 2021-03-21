@@ -15,6 +15,7 @@ exports.uploadFile = (imageFile, videoFile) => {
 
   //function untuk filter file berdasarkan type
   const fileFilter = function (req, file, cb) {
+    console.log(file, imageFile);
     if (file.fieldname === imageFile) {
       if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
         req.fileValidationError = {
@@ -64,10 +65,10 @@ exports.uploadFile = (imageFile, videoFile) => {
         return res.status(400).send(req.fileValidationError);
 
       //munculkan error jika file tidak disediakan
-      if (!req.files && !err)
-        return res.status(400).send({
-          message: "Please select files to upload",
-        });
+      // if (!req.files && !err)
+      //   return res.status(400).send({
+      //     message: "Please select files to upload",
+      //   });
 
       //munculkan error jika melebihi max size
       if (err) {

@@ -44,7 +44,7 @@ exports.deleteUser = async (req, res) => {
     });
 
     if (checkUser == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
         message: "User doesn't available",
       });
@@ -102,7 +102,7 @@ exports.updateUser = async (req, res) => {
     });
 
     if (rawUser == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
         message: "User doesn't available",
       });

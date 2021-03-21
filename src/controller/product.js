@@ -119,7 +119,7 @@ exports.getDetailProduct = async (req, res) => {
     });
 
     if (rawProduct == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
         message: "Product doesn't available",
       });
@@ -215,7 +215,7 @@ exports.deleteProduct = async (req, res) => {
       },
     });
     if (checkProduct == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
         message: "Product doesn't available",
       });
@@ -288,9 +288,9 @@ exports.updateProduct = async (req, res) => {
     });
 
     if (rawProduct == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
-        message: "Product not available or user doesn't access",
+        message: "Product not available",
       });
 
     const productString = JSON.stringify(rawProduct);

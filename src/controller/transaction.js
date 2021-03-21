@@ -140,7 +140,7 @@ exports.getDetailTransaction = async (req, res) => {
     });
 
     if (rawTransactions == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
         message: "Transaction doesn't available",
       });
@@ -462,7 +462,7 @@ exports.updateTransaction = async (req, res) => {
     });
 
     if (rawTransactions == null)
-      return res.status(400).send({
+      return res.status(404).send({
         status: "failed",
         message: "Transaction doesn't available",
       });
